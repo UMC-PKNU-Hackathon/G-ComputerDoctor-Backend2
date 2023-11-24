@@ -1,23 +1,23 @@
 // models/user.dao.js
 
-import { pool } from "../../../config/db.config.js";
-import { BaseError } from "../../../config/error.js";
-import { status } from "../../../config/response.status.js";
-import { connectFoodCategory, confirmEmail, getUserID, insertUserSql, getPreferToUserID } from "./user.sql.js";
+import { pool } from "file:///C:/UMC-Node.js/test3/config/db.connect.js";
+import { BaseError } from "file:///C:/UMC-Node.js/test3/config/error.js";
+import { status } from "file:///C:/UMC-Node.js/test3/config/response.status.js";
+import {confirmId, getUserID, insertUserSql, getUserPassword } from "file:///C:/UMC-Node.js/test3/src/models/user.sql.js";
 
-// User ë°ì´í„° ì‚½ìž…
+// User µ¥ÀÌÅÍ »ðÀÔ
 export const addUser = async (data) => {
     try{
         const conn = await pool.getConnection();
         
-        const [confirm] = await pool.query(confirmEmail, data.email);
-
-        if(confirm[0].isExistEmail){
+        const [confirm] = await pool.query(confirmId, data.personal_id);
+        
+        if(confirm[0].isExistId){
             conn.release();
             return -1;
         }
-
-        const result = await pool.query(insertUserSql, [data.email, data.name, data.gender, data.birth, data.addr, data.specAddr, data.phone]);
+        
+        const result = await pool.query(insertUserSql, [data.nickname, data.personal_id, data.password]);
 
         conn.release();
         return result[0].insertId;
@@ -27,13 +27,13 @@ export const addUser = async (data) => {
     }
 }
 
-// ì‚¬ìš©ìž ì •ë³´ ì–»ê¸°
+// »ç¿ëÀÚ Á¤º¸ ¾ò±â
 export const getUser = async (userId) => {
     try {
         const conn = await pool.getConnection();
         const [user] = await pool.query(getUserID, userId);
 
-        console.log(user);
+        console.log('user: ', user); // Á¦´ë·Î °¡Á®¿Ô´ÂÁö È®ÀÎ
 
         if(user.length == 0){
             return -1;
@@ -47,32 +47,27 @@ export const getUser = async (userId) => {
     }
 }
 
-// ìŒì‹ ì„ í˜¸ ì¹´í…Œê³ ë¦¬ ë§¤í•‘
-export const setPrefer = async (userId, foodCategoryId) => {
-    try {
+export const confirmUser = async (data) => {
+    try{
         const conn = await pool.getConnection();
         
-        await pool.query(connectFoodCategory, [foodCategoryId, userId]);
-
-        conn.release();
+        const [confirm] = await pool.query(confirmId, data.personal_id);
         
-        return;
-    } catch (err) {
-        throw new BaseError(status.PARAMETER_IS_WRONG);
-
-    }
-}
-
-// ì‚¬ìš©ìž ì„ í˜¸ ì¹´í…Œê³ ë¦¬ ë°˜í™˜
-export const getUserPreferToUserID = async (userID) => {
-    try {
-        const conn = await pool.getConnection();
-        const prefer = await pool.query(getPreferToUserID, userID);
-
+        if(confirm[0].isExistId == 0){
+            conn.release();
+            return -1;
+        }
+        
+        const [password] = await pool.query(getUserPassword, data.personal_id);
+        
         conn.release();
 
-        return prefer;
-    } catch (err) {
+        if(password[0].password != data.password)
+            return -2;
+        else
+            return 0;
+        
+    }catch (err) {
         throw new BaseError(status.PARAMETER_IS_WRONG);
     }
 }

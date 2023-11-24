@@ -1,42 +1,27 @@
 // index.js
-import express from 'express';
-import { tempRouter } from './G-ComputerDoctor-Backend2/src/routes/temp.route.js';
-import { userRouter } from './G-ComputerDoctor-Backend2/src/routes/user.route.js';
-import { specs } from './config/swagger.config.js';
-import { response } from './config/response.js';
-import { status } from './config/response.status.js';  // ì¶”ê°€!
-import { BaseError } from './config/error.js';  // ì¶”ê°€!
-import dotenv from 'dotenv';
-import cors from 'cors';
+import { userRouter } from 'file:///C:/UMC-Node.js/test3/src/routes/user.route.js';
+import { specs } from 'file:///C:/UMC-Node.js/test3/config/swagger.config.js';
 import SwaggerUi from 'swagger-ui-express';
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
 
-dotenv.config();    // .env íŒŒì¼ ì‚¬ìš© (í™˜ê²½ ë³€ìˆ˜ ê´€ë¦¬)
+dotenv.config();    // .env ÆÄÀÏ »ç¿ë (È¯°æ º¯¼ö °ü¸®)
 
 const app = express();
 
 // server setting - veiw, static, body-parser etc..
-app.set('port', process.env.PORT || 3000)   // ì„œë²„ í¬íŠ¸ ì§€ì •
-app.use(cors());                            // cors ë°©ì‹ í—ˆìš©
-app.use(express.static('public'));          // ì •ì  íŒŒì¼ ì ‘ê·¼
-app.use(express.json());                    // requestì˜ ë³¸ë¬¸ì„ jsonìœ¼ë¡œ í•´ì„í•  ìˆ˜ ìžˆë„ë¡ í•¨ (JSON í˜•íƒœì˜ ìš”ì²­ bodyë¥¼ íŒŒì‹±í•˜ê¸° ìœ„í•¨)
-app.use(express.urlencoded({extended: false})); // ë‹¨ìˆœ ê°ì²´ ë¬¸ìžì—´ í˜•íƒœë¡œ ë³¸ë¬¸ ë°ì´í„° í•´ì„
+app.set('port', process.env.PORT || 3000)   // ¼­¹ö Æ÷Æ® ÁöÁ¤
+app.use(cors());                            // cors ¹æ½Ä Çã¿ë
+app.use(express.static('public'));          // Á¤Àû ÆÄÀÏ Á¢±Ù
+app.use(express.json());                    // requestÀÇ º»¹®À» jsonÀ¸·Î ÇØ¼®ÇÒ ¼ö ÀÖµµ·Ï ÇÔ (JSON ÇüÅÂÀÇ ¿äÃ» body¸¦ ÆÄ½ÌÇÏ±â À§ÇÔ)
+app.use(express.urlencoded({extended: false})); // ´Ü¼ø °´Ã¼ ¹®ÀÚ¿­ ÇüÅÂ·Î º»¹® µ¥ÀÌÅÍ ÇØ¼®
+
 
 //swagger settings
 app.use('/api-docs', SwaggerUi.serve, SwaggerUi.setup(specs));
 
-// router setting
-app.use('/temp', tempRouter);
 app.use('/user', userRouter);
-
-
-app.use((err, req, res, next) => {
-    // í…œí”Œë¦¿ ì—”ì§„ ë³€ìˆ˜ ì„¤ì •
-    res.locals.message = err.message;   
-    // ê°œë°œí™˜ê²½ì´ë©´ ì—ëŸ¬ë¥¼ ì¶œë ¥í•˜ê³  ì•„ë‹ˆë©´ ì¶œë ¥í•˜ì§€ ì•Šê¸°
-    res.locals.error = process.env.NODE_ENV !== 'production' ? err : {}; 
-    console.log("error", err);
-    res.status(err.data.status || status.INTERNAL_SERVER_ERROR).send(response(err.data));
-});
 
 app.listen(app.get('port'), () => {
     console.log(`Example app listening on port ${app.get('port')}`);

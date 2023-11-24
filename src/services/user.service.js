@@ -1,6 +1,30 @@
-// user.service.js
+import { addUser, confirmUser} from "file:///C:/UMC-Node.js/test3/src/models/user.dao.js";
 
-if(joinUserData == -1){
-    // joinUserData가 -1일 때, if문에 걸려 Error를 뱉게 된다!
-throw new BaseError(status.EMAIL_ALREADY_EXIST);
+export const joinUser = async (body) => {
+    const joinUserData = await addUser({
+        'nickname': body.nickname,
+        'personal_id': body.personal_id,
+        'password': body.password
+    });
+    if(joinUserData == -1){
+        return joinUserData;
+    }else{
+        return joinUserData;
+    }
 }
+
+ export const loginUser = async (body) => {
+    const loginUserData = await confirmUser({
+        'personal_id': body.personal_id,
+        'password' : body.password
+    });
+    console.log("loginUserData: " ,loginUserData);
+
+    if (loginUserData == -1) {
+        return loginUserData;
+    } else if((loginUserData == -2)){
+        return loginUserData;
+    } else {
+        return loginUserData;
+    }
+ }
