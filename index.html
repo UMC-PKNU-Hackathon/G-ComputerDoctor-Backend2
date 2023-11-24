@@ -1,0 +1,26 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Screen Sharing</title>
+</head>
+<body>
+    <button id="startButton">Start Sharing</button>
+    <video id="video" autoplay></video>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            navigator.mediaDevices.getDisplayMedia({ video: true })
+                .then(stream => {
+                    document.getElementById('video').srcObject = stream;
+                })
+                .catch(err => {
+                    console.error("Error: " + err);
+                });
+        });
+    </script>
+</body>
+</html>
